@@ -1,8 +1,55 @@
 //Ventana del pong
 const canvas = document.getElementById("canvasGame");
 const context = canvas.getContext("2d");
-canvas.height = 400;
-canvas.width = 640;
+
+function setCanvas(height, width)
+{
+    canvas.height = height;
+    canvas.width = width;
+}
+setCanvas(400, 640);
+//Element
+class Element {
+    constructor(options)
+    {
+        this.x = options.x;
+        this.y = options.y;
+        this.height = options.height;
+        this.width = options.width;
+        this.color = options.color;
+        this.speed = options.speed;
+        this.local = options.local; //true-> local, false-> remote
+    }
+}
+//Keyboard
+class KeyboardClass {
+    constructor() {	
+      this.item = [];	
+      document.addEventListener("keyup", this.onKeyUp.bind(this));					
+      document.addEventListener("keydown", this.onKeyDown.bind(this));	
+    }
+    onKeyDown(event) {
+      let preventKeys = ['Escape', 'Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '];
+      if (preventKeys.indexOf(event.key) > -1) event.preventDefault();
+      if (this.item.indexOf(event.key) < 0) this.item.push(event.key);	
+    }
+    onKeyUp(event) {
+      let i = this.item.indexOf(event.key);
+      if (i > -1) this.item.splice(i, 1);
+    }
+    getKeys() { 
+      return this.item
+    }
+    click(key) { 
+      let i = this.item.indexOf(key);
+      if (i > -1) this.item.splice(i, 1);
+      return (i > -1);
+    }
+    key(key) { 
+      return (this.item.indexOf(key) > -1);
+    }
+}
+const keyControler = new KeyboardClass;
 //Marcadores
 let scoreOne = 0;
 let scoreTwo = 0;
@@ -13,23 +60,15 @@ let player1Up = 0;
 let player1Down = 0;
 let player2Up = 0;
 let player2Down = 0;
+let keyValue1Up = "w";
+let keyValue1Down = "s";
+let keyValue2Up = "o";
+let keyValue2Down = "l";
 
-//Palas y pelota
-class Element{
-    constructor(options)
-    {
-        this.x = options.x;
-        this.y = options.y;
-        this.height = options.height;
-        this.width = options.width;
-        this.color = options.color;
-        this.speed = options.speed;
-    }
-}
 //Player One
-const playerOne = new Element({x:10, y:150, height:100, width:15, color:"#fff", speed:speedGame});
+const playerOne = new Element({x:10, y:150, height:100, width:15, color:"#fff", speed:speedGame, local:true});
 //Player Two
-const playerTwo = new Element({x:615, y:150, height:100, width:15, color:"#fff", speed:speedGame});
+const playerTwo = new Element({x:615, y:150, height:100, width:15, color:"#fff", speed:speedGame, local:true});
 //Ball
 const ball = new Element({x:314, y:194, height:16, width:16, color:"#fff", speed:speedGame});
 
@@ -55,6 +94,24 @@ function    drawElements()
     drawElement(ball);
     displayScore();
 }
+// Reading imputs
+function    readImputs(player1, player2)
+{
+    if (player1.local) {
+        player1Up = keyControler.key(keyValue1Up);
+        player1Down = keyControler.key(keyValue1Down);
+    } else {
+        player1Up = 0;   //read from websocket
+        player1Down = 0;
+    }
+    if (player2.local) {
+        player2Up = keyControler.key(keyValue2Up);
+        player2Down = keyControler.key(keyValue2Down);
+    } else {
+        player2Up = 0;   //read from websocket
+        player2Down = 0;
+    }
+}
 function    moveElements()
 {
     let move = player1Up - player1Down;
@@ -74,77 +131,12 @@ function ballCollision()
 {
 
 }
-/*  KEYS            */
-window.addEventListener("keydown", keyPressDown); //keypress, keydown
-function    keyPressDown(e)
-{
-    if (e.key == "w") {
-        player1Up = 1;
-        console.log("w down");
-    }
-    if (e.key == "s") {
-        player1Down = 1;
-        console.log("s down");
-    }
-    if (e.key == "o") {
-        player2Up = 1;
-        console.log("o down");
-    }
-    if (e.key == "l") {
-        player2Down = 1;
-        console.log("l down");
-    }
-}
-window.addEventListener("keyup", keyPressUp); //keypress, keydown
-function    keyPressUp(e)
-{
-    if (e.key == "w") {
-        player1Up = 0;
-        console.log("w up");
-    }
-    if (e.key == "s") {
-        player1Down = 0;
-        console.log("s up");
-    }
-    if (e.key == "o") {
-        player2Up = 0;
-        console.log("o up");
-    }
-    if (e.key == "l") {
-        player2Down = 0;
-        console.log("l up");
-    }
-}
-//error con dos pulsaciones simultaneas
-/* window.addEventListener("keypress", keyPress1); //keypress, keydown
-function    keyPress1(e)
-{
-    //player 1
-    if      (e.key == "w") {
-        playerOne.y -= playerOne.speed;
-        console.log("w");
-    }
-    else if (e.key == "s") {
-        playerOne.y += playerOne.speed;
-        console.log("s");
-    }
-}
-window.addEventListener("keypress", keyPress2); //keypress, keydown
-function    keyPress2(e)
-{
-    //player 2
-    if      (e.key == "o") {
-        playerTwo.y -= playerTwo.speed;
-        console.log("o");
-    }    
-    else if (e.key == "l") {
-        playerTwo.y += playerTwo.speed;
-        console.log("l");
-    }
-} */
+
+
 /*  GAME LOOP       */
 function    loop()
 {
+    readImputs(playerOne, playerTwo);
     moveElements();
     drawElements();
     window.requestAnimationFrame(loop);
