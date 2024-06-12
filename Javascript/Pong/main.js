@@ -1,5 +1,4 @@
 //Ventana del pong
-import { Element } from "./element";
 const canvas = document.getElementById("canvasGame");
 const context = canvas.getContext("2d");
 
@@ -10,7 +9,7 @@ function setCanvas(height, width)
 }
 setCanvas(400, 640);
 //Element
-export class Element {
+class Element {
     constructor(options)
     {
         this.x = options.x;
@@ -68,7 +67,7 @@ let keyValue2Up = "o";
 let keyValue2Down = "l";
 //paddle 
 let paddleMargin = 10;
-let paddleHeight = 100;s
+let paddleHeight = 100;
 let paddleWidth = 15;
 let paddleColor = "#fff";
 //ball
@@ -85,7 +84,7 @@ function    setBall(size, color) {
     ballSize = size;
     ballColor = color;
 }
-//setPaddle(20, 150, 6, "#fff");
+setPaddle(20, 150, 6, "#fff");
 //setBall(30, "#a0f")
 //Player One
 const playerOne = new Element({ x:paddleMargin, 
@@ -163,9 +162,39 @@ function    moveElements()
     else if (move == -1) playerTwo.y += playerTwo.speed;
 }
 //Ball bounce
-function ballBounce()
+function    res(x, y)
 {
+    let result;
 
+    result = y * (x / y - Math.floor(x / y));
+    return (result);
+}
+
+function    par(x, y)
+{
+    let result;
+
+    result = res(Math.floor(x / y), 2) * 2 - 1;
+    return (result);
+
+
+}
+
+function    mov(x)
+{
+    let result;
+
+    result = canvas.height - canvas.height / 2 - 1 * x;
+    return (result);
+}
+
+function ballBounce(x)
+{
+    let result;
+    let h = canvas.height;
+
+    result = par(mov(x), h) * res(mov(x), h) + (par(mov(x), h) == -1 ? h : 0);
+    return(result);
 }
 //Wall collisions
 function ballCollision()
