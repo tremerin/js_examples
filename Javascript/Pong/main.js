@@ -1,4 +1,5 @@
 //Ventana del pong
+import { Element } from "./element";
 const canvas = document.getElementById("canvasGame");
 const context = canvas.getContext("2d");
 
@@ -9,7 +10,7 @@ function setCanvas(height, width)
 }
 setCanvas(400, 640);
 //Element
-class Element {
+export class Element {
     constructor(options)
     {
         this.x = options.x;
@@ -21,6 +22,7 @@ class Element {
         this.local = options.local; //true-> local, false-> remote
     }
 }
+
 //Keyboard
 class KeyboardClass {
     constructor() {	
@@ -64,13 +66,50 @@ let keyValue1Up = "w";
 let keyValue1Down = "s";
 let keyValue2Up = "o";
 let keyValue2Down = "l";
+//paddle 
+let paddleMargin = 10;
+let paddleHeight = 100;s
+let paddleWidth = 15;
+let paddleColor = "#fff";
+//ball
+let ballSize = 16;
+let ballColor = "#fff";
 
+function    setPaddle(margin, height, width, color) {
+    paddleMargin = margin;
+    paddleHeight = height;
+    paddleWidth = width;
+    paddleColor = color;
+}
+function    setBall(size, color) {
+    ballSize = size;
+    ballColor = color;
+}
+//setPaddle(20, 150, 6, "#fff");
+//setBall(30, "#a0f")
 //Player One
-const playerOne = new Element({x:10, y:150, height:100, width:15, color:"#fff", speed:speedGame, local:true});
+const playerOne = new Element({ x:paddleMargin, 
+                                y:(canvas.height/2) - (paddleHeight/2), 
+                                height:paddleHeight, 
+                                width:paddleWidth, 
+                                color:paddleColor, 
+                                speed:speedGame, 
+                                local:true});
 //Player Two
-const playerTwo = new Element({x:615, y:150, height:100, width:15, color:"#fff", speed:speedGame, local:true});
+const playerTwo = new Element({ x:canvas.width - (paddleWidth + paddleMargin), 
+                                y:(canvas.height/2) - (paddleHeight/2), 
+                                height:paddleHeight, 
+                                width:paddleWidth, 
+                                color:paddleColor, 
+                                speed:speedGame, 
+                                local:true});
 //Ball
-const ball = new Element({x:314, y:194, height:16, width:16, color:"#fff", speed:speedGame});
+const ball = new Element({      x:(canvas.width/2) - ballSize/2, 
+                                y:(canvas.height/2) - ballSize, 
+                                height:ballSize, 
+                                width:ballSize, 
+                                color:ballColor, 
+                                speed:speedGame});
 
 //Score
 function    displayScore()
@@ -100,6 +139,7 @@ function    readImputs(player1, player2)
     if (player1.local) {
         player1Up = keyControler.key(keyValue1Up);
         player1Down = keyControler.key(keyValue1Down);
+        //send value to server
     } else {
         player1Up = 0;   //read from websocket
         player1Down = 0;
@@ -107,6 +147,7 @@ function    readImputs(player1, player2)
     if (player2.local) {
         player2Up = keyControler.key(keyValue2Up);
         player2Down = keyControler.key(keyValue2Down);
+        //send value to server
     } else {
         player2Up = 0;   //read from websocket
         player2Down = 0;
