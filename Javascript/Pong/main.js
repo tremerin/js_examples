@@ -84,7 +84,7 @@ function    setBall(size, color) {
     ballSize = size;
     ballColor = color;
 }
-setPaddle(20, 150, 6, "#fff");
+//setPaddle(20, 150, 6, "#fff");
 //setBall(30, "#a0f")
 //Player One
 const playerOne = new Element({ x:paddleMargin, 
@@ -155,11 +155,15 @@ function    readImputs(player1, player2)
 function    moveElements()
 {
     let move = player1Up - player1Down;
-    if (move == 1) playerOne.y -= playerOne.speed;
-    else if (move == -1) playerOne.y += playerOne.speed;
+    if (move == 1 && playerOne.y > paddleMargin) 
+        playerOne.y -= playerOne.speed;
+    else if (move == -1 && (playerOne.y + paddleHeight) < (canvas.height - paddleMargin)) 
+        playerOne.y += playerOne.speed;
     move = player2Up - player2Down;
-    if (move == 1) playerTwo.y -= playerTwo.speed;
-    else if (move == -1) playerTwo.y += playerTwo.speed;
+    if (move == 1 && playerTwo.y > paddleMargin) 
+        playerTwo.y -= playerTwo.speed;
+    else if (move == -1 && (playerTwo.y + paddleHeight) < (canvas.height - paddleMargin)) 
+        playerTwo.y += playerTwo.speed;
 }
 //Ball bounce
 function    res(x, y)
