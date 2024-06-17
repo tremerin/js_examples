@@ -2,12 +2,6 @@
 const canvas = document.getElementById("canvasGame");
 const context = canvas.getContext("2d");
 
-function setCanvas(height, width)
-{
-    canvas.height = height;
-    canvas.width = width;
-}
-setCanvas(400, 640);
 //Element
 class Element {
     constructor(options)
@@ -51,6 +45,20 @@ class KeyboardClass {
     }
 }
 const keyControler = new KeyboardClass;
+//Canvas size
+function    setCanvas(height, width) {
+    canvas.height = height;
+    canvas.width = width;
+}
+setCanvas(0, 0); //400, 640
+//Field size
+let fieldHeight = 0;
+let fieldWidth = 0;
+function    setField(height, width) {
+    fieldHeight = height;
+    fieldWidth = width;
+}
+setField(400, 640);
 //Marcadores
 let scoreOne = 0;
 let scoreTwo = 0;
@@ -88,23 +96,23 @@ function    setBall(size, color) {
 //setBall(30, "#a0f")
 //Player One
 const playerOne = new Element({ x:paddleMargin, 
-                                y:(canvas.height/2) - (paddleHeight/2), 
+                                y:(fieldHeight/2) - (paddleHeight/2), 
                                 height:paddleHeight, 
                                 width:paddleWidth, 
                                 color:paddleColor, 
                                 speed:speedGame, 
                                 local:true});
 //Player Two
-const playerTwo = new Element({ x:canvas.width - (paddleWidth + paddleMargin), 
-                                y:(canvas.height/2) - (paddleHeight/2), 
+const playerTwo = new Element({ x:fieldWidth - (paddleWidth + paddleMargin), 
+                                y:(fieldHeight/2) - (paddleHeight/2), 
                                 height:paddleHeight, 
                                 width:paddleWidth, 
                                 color:paddleColor, 
                                 speed:speedGame, 
                                 local:true});
 //Ball
-const ball = new Element({      x:(canvas.width/2) - ballSize/2, 
-                                y:(canvas.height/2) - ballSize, 
+const ball = new Element({      x:(fieldWidth/2) - ballSize/2, 
+                                y:(fieldHeight/2) - ballSize, 
                                 height:ballSize, 
                                 width:ballSize, 
                                 color:ballColor, 
@@ -210,6 +218,14 @@ function ballCollision()
 /*  GAME LOOP       */
 function    loop()
 {
+    if (keyControler.key("g")) {
+        setCanvas(400, 640);
+        //reposElement(playerTwo);
+        playerTwo.y = (canvas.height/2) - (paddleHeight/2);
+        playerTwo.x = canvas.width - (paddleWidth + paddleMargin);
+    }
+    if (keyControler.key("r"))
+        setCanvas(0, 0);
     readImputs(playerOne, playerTwo);
     moveElements();
     drawElements();
