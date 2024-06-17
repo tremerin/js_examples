@@ -177,7 +177,6 @@ function    moveElements()
 function    res(x, y)
 {
     let result;
-
     result = y * (x / y - Math.floor(x / y));
     return (result);
 }
@@ -185,27 +184,23 @@ function    res(x, y)
 function    par(x, y)
 {
     let result;
-
     result = res(Math.floor(x / y), 2) * 2 - 1;
     return (result);
-
-
 }
 
-function    mov(x)
+function    mov(x, y, dir)
 {
     let result;
-
-    result = canvas.height - canvas.height / 2 - 1 * x;
+    result = canvas.height - canvas.height / 2 - dir * x;
     return (result);
 }
 
-function ballBounce(x)
+function ballBounce(x, y, dir)
 {
     let result;
     let h = canvas.height;
 
-    result = par(mov(x), h) * res(mov(x), h) + (par(mov(x), h) == -1 ? h : 0);
+    result = par(mov(x, y, dir), h) * res(mov(x, y, dir), h) + (par(mov(x, y, dir), h) == -1 ? h : 0);
     return(result);
 }
 //Wall collisions
@@ -216,8 +211,26 @@ function ballCollision()
 
 
 /*  GAME LOOP       */
-function    loop()
+direction = 1;
+y_position = 0
+function    loop(timestamp)
 {
+    console.log(timestamp);
+    speed = 2000;
+
+    x_position = 640 * (timestamp % speed) / speed;
+    ball.x = x_position % 640;
+    if (direction == -1)
+        ball.x = 640 - ball.x % 640;
+    if (ball.x > 630 && direction == 1)
+        direction *= -1;
+    else if (ball.x < 10 && direction == -1)
+        direction *= -1;
+    if (y_position == 0)
+        ball.y = ballBounce(ball.x, canvas.height / 2, direction);
+    else
+        ball.y = ballBounce(ball.x, y_position, direction)
+    y_position = ball.y;
     if (keyControler.key("g")) {
         setCanvas(400, 640);
         //reposElement(playerTwo);
