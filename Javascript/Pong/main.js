@@ -174,10 +174,9 @@ function    moveElements()
         playerTwo.y += playerTwo.speed;
 }
 //Ball bounce
-function    res(x, y)
+/* function    res(x, y)
 {
     let result;
-
     result = y * (x / y - Math.floor(x / y));
     return (result);
 }
@@ -185,17 +184,13 @@ function    res(x, y)
 function    par(x, y)
 {
     let result;
-
     result = res(Math.floor(x / y), 2) * 2 - 1;
     return (result);
-
-
 }
 
 function    mov(x)
 {
     let result;
-
     result = canvas.height - canvas.height / 2 - 1 * x;
     return (result);
 }
@@ -204,20 +199,23 @@ function ballBounce(x)
 {
     let result;
     let h = canvas.height;
-
     result = par(mov(x), h) * res(mov(x), h) + (par(mov(x), h) == -1 ? h : 0);
     return(result);
-}
+} */
+
 //Wall collisions
 function ballCollision()
 {
 
 }
 
+var lastTime = 0;
+var fps = 0;
 
 /*  GAME LOOP       */
-function    loop()
+function    loop(time)
 {
+
     if (keyControler.key("g")) {
         setCanvas(400, 640);
         //reposElement(playerTwo);
@@ -226,6 +224,14 @@ function    loop()
     }
     if (keyControler.key("r"))
         setCanvas(0, 0);
+
+    fps++;
+    if (time - lastTime >= 1000) // ha pasado un segundo
+    {
+        console.log(fps);
+        fps = 0;
+        lastTime = time;
+    }
     readImputs(playerOne, playerTwo);
     moveElements();
     drawElements();
