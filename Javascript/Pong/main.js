@@ -13,6 +13,7 @@ class Element {
         this.color = options.color;
         this.speed = options.speed;
         this.local = options.local; //true-> local, false-> remote
+        this.dir = options.dir;
     }
 }
 
@@ -50,7 +51,7 @@ function    setCanvas(height, width) {
     canvas.height = height;
     canvas.width = width;
 }
-setCanvas(0, 0); //400, 640
+setCanvas(400, 640); //400, 640
 //Field size
 let fieldHeight = 0;
 let fieldWidth = 0;
@@ -112,11 +113,12 @@ const playerTwo = new Element({ x:fieldWidth - (paddleWidth + paddleMargin),
                                 local:true});
 //Ball
 const ball = new Element({      x:(fieldWidth/2) - ballSize/2, 
-                                y:(fieldHeight/2) - ballSize, 
+                                y:(fieldHeight/2) - ballSize/2, 
                                 height:ballSize, 
                                 width:ballSize, 
                                 color:ballColor, 
                                 speed:speedGame});
+                                dir:45;
 
 //Score
 function    displayScore()
@@ -173,6 +175,86 @@ function    moveElements()
     else if (move == -1 && (playerTwo.y + paddleHeight) < (canvas.height - paddleMargin)) 
         playerTwo.y += playerTwo.speed;
 }
+
+//Wall movements
+const bounce =  Math.PI * 1.5;
+function initBallAngle()
+{
+    let angle = Math.floor(Math.random() * 360);
+    let radians = angle * Math.PI / 180;
+    console.log(angle + "º = " + radians + " radians")
+    ball.dir = radians;
+}
+function ballBounce()
+{
+    if (ball.dir > 0 && ball.dir < Math.PI / 2)
+        ball.dir = (Math.PI * 2) - ball.dir;
+    else if (ball.dir > Math.PI / 2 && ball.dir < Math.PI)
+        ball.dir = (Math.PI * 1.5) - (ball.dir - Math.PI / 2);
+    else if (ball.dir > Math.PI && ball.dir < Math.PI * 1.5)
+        ball.dir = (Math.PI * 1.5) - (ball.dir - Math.PI / 2);
+    else if (ball.dir > Math.PI * 1.5 && ball.dir < Math.PI * 2)
+        ball.dir = (Math.PI * 2) - ball.dir;
+}
+function ballCollision()
+{
+    //goal
+    if (ball.x >= canvas.width)
+    {
+        ball.x = (fieldWidth/2) - (ballSize/2);
+        ball.y = (fieldHeight/2) - (ballSize/2);
+        initBallAngle();
+        scoreOne++;
+    }
+    else if (ball.x <= 0)
+    {
+        ball.x = (fieldWidth/2) - (ballSize/2);
+        ball.y = (fieldHeight/2) - (ballSize/2);
+        initBallAngle();
+        scoreTwo++;
+    } 
+    //wall collision   
+    if (ball.y >= canvas.height - ball.height || (ball.y + ball.height/2) <= 0)
+        ballBounce();
+}
+function ballMovement()
+{
+    ball.speed  = 1;
+    ballCollision();
+    let pX = Math.cos(ball.dir) * ball.speed;
+    let pY = Math.sin(ball.dir) * ball.speed;
+    ball.x += pX;
+    ball.y += pY;
+    //console.log(ball.x, ball.y);
+}
+
+var lastTime = 0;
+var fps = 0;
+
+/*  GAME LOOP       */
+initBallAngle();
+function    loop(time)
+{
+    if (keyControler.key("g")) setCanvas(400, 640);
+    else if (keyControler.key("r")) setCanvas(0, 0);
+    else if (keyControler.key("a")) initBallAngle();
+
+    fps++;
+    if (time - lastTime >= 1000) // ha pasado un segundo
+    {
+        console.log(fps);
+        fps = 0;
+        lastTime = time;
+    }
+    readImputs(playerOne, playerTwo);
+    ballMovement();
+    moveElements();
+    drawElements();
+    window.requestAnimationFrame(loop);
+}
+loop();
+
+
 //Ball bounce
 /* function    res(x, y)
 {
@@ -202,39 +284,3 @@ function ballBounce(x)
     result = par(mov(x), h) * res(mov(x), h) + (par(mov(x), h) == -1 ? h : 0);
     return(result);
 } */
-
-//Wall collisions
-function ballCollision()
-{
-
-}
-
-var lastTime = 0;
-var fps = 0;
-
-/*  GAME LOOP       */
-function    loop(time)
-{
-
-    if (keyControler.key("g")) {
-        setCanvas(400, 640);
-        //reposElement(playerTwo);
-        playerTwo.y = (canvas.height/2) - (paddleHeight/2);
-        playerTwo.x = canvas.width - (paddleWidth + paddleMargin);
-    }
-    if (keyControler.key("r"))
-        setCanvas(0, 0);
-
-    fps++;
-    if (time - lastTime >= 1000) // ha pasado un segundo
-    {
-        console.log(fps);
-        fps = 0;
-        lastTime = time;
-    }
-    readImputs(playerOne, playerTwo);
-    moveElements();
-    drawElements();
-    window.requestAnimationFrame(loop);
-}
-loop();
