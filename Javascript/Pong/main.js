@@ -228,7 +228,7 @@ function ballMovement()
     //console.log(ball.x, ball.y);
 }
 
-var lastTime = 0;
+var lastTime = 0; //
 var fps = 0;
 
 /*  GAME LOOP       */
