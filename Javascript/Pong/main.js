@@ -182,7 +182,7 @@ function initBallAngle()
 {
     let angle = Math.floor(Math.random() * 360);
     let radians = angle * Math.PI / 180;
-    console.log(angle + "º = " + radians + " radians")
+    //console.log(angle + "º = " + radians + " radians")
     ball.dir = radians;
 }
 function ballBounce()
@@ -196,10 +196,32 @@ function ballBounce()
     else if (ball.dir > Math.PI * 1.5 && ball.dir < Math.PI * 2)
         ball.dir = (Math.PI * 2) - ball.dir;
 }
+function paddleBounce()
+{
+    if (ball.dir > (Math.PI / 2) && ball.dir < Math.PI)
+        ball.dir = Math.PI - ball.dir;
+    else if (ball.dir < (Math.PI * 1.5) && ball.dir > Math.PI)
+        ball.dir = (Math.PI * 1.5) + (Math.PI * 1.5 - ball.dir);
+    else if (ball.dir > 0 && ball.dir < Math.PI/2)
+        ball.dir = (Math.PI * 2) - ball.dir;
+    else if (ball.dir > (Math.PI * 1.5) && ball.dir < (Math.PI * 2))
+        ball.dir = (Math.PI * 1.5) + (Math.PI * 1.5 - ball.dir);
+}
 function ballCollision()
 {
+    //left paddle collision
+    if (ball.x <= paddleMargin + paddleWidth)
+    {
+        paddleBounce();
+        //console.log(ball.x);
+    }
+    else if (ball.x >= canvas.width - (paddleMargin + paddleWidth + ball.width/2))
+    {
+        paddleBounce();
+        console.log("dir: " + ball.dir);
+    }
     //goal
-    if (ball.x >= canvas.width)
+    else if (ball.x >= canvas.width)
     {
         ball.x = (fieldWidth/2) - (ballSize/2);
         ball.y = (fieldHeight/2) - (ballSize/2);
@@ -214,12 +236,12 @@ function ballCollision()
         scoreTwo++;
     } 
     //wall collision   
-    if (ball.y >= canvas.height - ball.height || (ball.y + ball.height/2) <= 0)
+    else if (ball.y >= canvas.height - ball.height || (ball.y + ball.height/2) <= 0)
         ballBounce();
 }
 function ballMovement()
 {
-    ball.speed  = 1;
+    ball.speed  = 2;
     ballCollision();
     let pX = Math.cos(ball.dir) * ball.speed;
     let pY = Math.sin(ball.dir) * ball.speed;
