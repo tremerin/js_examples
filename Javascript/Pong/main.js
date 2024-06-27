@@ -180,7 +180,8 @@ function    moveElements()
 const bounce =  Math.PI * 1.5;
 function initBallAngle()
 {
-    let angle = Math.floor(Math.random() * 360);
+    //let angle = Math.floor(Math.random() * 360);
+    let angle = 35 + Math.floor(Math.random() * 20) + Math.floor(Math.random() * 3) * 90;
     let radians = angle * Math.PI / 180;
     //console.log(angle + "º = " + radians + " radians")
     ball.dir = radians;
@@ -205,17 +206,18 @@ function paddleBounce()
     else if (ball.dir > 0 && ball.dir < Math.PI/2)
         ball.dir = (Math.PI * 2) - ball.dir;
     else if (ball.dir > (Math.PI * 1.5) && ball.dir < (Math.PI * 2))
-        ball.dir = (Math.PI * 1.5) + (Math.PI * 1.5 - ball.dir);
+        ball.dir = (Math.PI * 1.5) - (ball.dir - Math.PI * 1.5);
 }
 function ballCollision()
 {
     //left paddle collision
-    if (ball.x <= paddleMargin + paddleWidth)
+    if (ball.x <= paddleMargin + paddleWidth && ball.y >= playerOne.y - 10 && ball.y <= playerOne.y + paddleHeight + 10)
     {
         paddleBounce();
         //console.log(ball.x);
     }
-    else if (ball.x >= canvas.width - (paddleMargin + paddleWidth + ball.width/2))
+    else if (ball.x >= canvas.width - (paddleMargin + paddleWidth + ball.width/2) 
+        && ((ball.dir > (Math.PI * 1.5) && ball.dir < (Math.PI * 2)) || (ball.dir > 0 && ball.dir < Math.PI/2))) //if x positva
     {
         paddleBounce();
         console.log("dir: " + ball.dir);
