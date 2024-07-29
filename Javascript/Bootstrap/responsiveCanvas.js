@@ -13,12 +13,13 @@ class PongModel {
         //field
         this.fieldWidth = 1;
         this.fieldHeight = scale(this.fieldWidth, 4, 3);
-        this.fieldMarginX = scale(this.fieldWidth, 100, 1);
-        this.fieldMarginY = scale(this.fieldHeight, 100, 1);
+        this.fieldMargin = 2;
+        this.fieldMarginX = scale(this.fieldWidth, 100, this.fieldMargin);
+        this.fieldMarginY = scale(this.fieldHeight, 100, this.fieldMargin);
         //paddle
-        this.paddleWidth = scale(this.fieldWidth, 100, 1);
-        this.paddleHeight = scale(this.fieldHeight, 100, 5);
-        this.paddleInitY = (this.fieldHeight / 2) - (this.paddelHeight / 2);
+        this.paddleWidth = scale(this.fieldWidth, 100, 2);
+        this.paddleHeight = scale(this.fieldHeight, 100, 20);
+        this.paddleInitY = (this.fieldHeight / 2) - (this.paddleHeight / 2);
         this.paddleTopLimit = this.fieldMarginY;
         this.paddleBottonLimit = this.fieldHeight - this.fieldMarginY - this.paddleHeight;
         this.paddleOnePosX = this.fieldMarginX;
@@ -48,13 +49,31 @@ function    setCanvas(height, width) {
 function    resizeCanvas(xScale, yScale) {
     let rect = canvasContainer.getBoundingClientRect();
     xSize = rect.width;
+    lastSize = xSize;
     ySize = (xSize/xScale) * yScale;
     setCanvas(ySize, xSize); 
 }
 
 //draw pong
-function drawPong() {
+function drawPong(xSize) {
+    context.fillStyle = "#fff";
+    //paddle one
+    context.fillRect( pong.paddleOnePosX * xSize
+                    , pong.paddleInitY   * xSize
+                    , pong.paddleWidth   * xSize
+                    , pong.paddleHeight  * xSize);
+    //paddel two
+    context.fillRect( pong.paddleTwoPosX * xSize
+                    , pong.paddleInitY   * xSize
+                    , pong.paddleWidth   * xSize
+                    , pong.paddleHeight  * xSize); 
+    //ball
 
+    
+    //console.log(pong.paddleOnePosX * xSize);
+    //console.log(pong.paddleInitY   * xSize);
+    //console.log(pong.paddleHeight  * xSize);
+    //console.log(pong.paddleWidth   * xSize);
 }
 
 //margin %100, number of squares
@@ -103,7 +122,8 @@ function    loop(time)
         fps = 0;
         lastTime = time;
         resizeCanvas(xScale, yScale);
-        drawTest(10, 1)
+        drawTest(10, 20);
+        drawPong(xSize);
     }
     window.requestAnimationFrame(loop);
 }
