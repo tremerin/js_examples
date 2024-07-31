@@ -22,22 +22,85 @@ class PongModel {
         this.paddleInitY = (this.fieldHeight / 2) - (this.paddleHeight / 2);
         this.paddleTopLimit = this.fieldMarginY;
         this.paddleBottonLimit = this.fieldHeight - this.fieldMarginY - this.paddleHeight;
-        this.paddleOnePosX = this.fieldMarginX;
-        this.paddleTwoPosX = this.fieldWidth - this.fieldMarginX - this.paddleWidth;
+        //paddle one
+        this.paddleOneInitPosX = this.fieldMarginX;
+        this.paddleOnePosX = this.paddleOneInitPosX;
+        this.paddleOnePosY = this.paddleInitY;
+        this.paddleOneColor = "#fff";
+        //paddel two
+        this.paddleTwoInitPosX = this.fieldWidth - this.fieldMarginX - this.paddleWidth;
+        this.paddleTwoPosX = this.paddleTwoInitPosX;
+        this.paddleTwoPosY = this.paddleInitY;
+        this.paddleTwoColor = "#fff";
         //ball
-        this.ballRadius = scale(this.fieldWidth, 100, 1);
+        this.ballRadius = scale(this.fieldWidth, 100, 3);
         this.ballInitX = (this.fieldWidth / 2) - (this.ballRadius / 2);
         this.ballInitY = (this.fieldHeight / 2) - (this.ballRadius / 2);
+        this.ballX = this.ballInitX;
+        this.ballY = this.ballInitY;
+        this.ballColor = "#fff";
+        //score
+        this.scoreOnePosX = this.fieldWidth - scale(this.fieldWidth, 100, 20);
+        this.scoreTwoPosX = scale(this.fieldWidth, 100, 20);
+        this.scorePosY = scale(this.fieldWidth, 100, 10);
+        this.scoreColor = "#fff";
+    }
+
+    draw(xSize, context) {
+        //paddle one
+        context.fillStyle = this.paddleOneColor;
+        context.fillRect( this.paddleOnePosX * xSize
+                        , this.paddleOnePosY * xSize
+                        , this.paddleWidth   * xSize
+                        , this.paddleHeight  * xSize);
+        //paddle two
+        context.fillStyle = this.paddleTwoColor;
+        context.fillRect( this.paddleTwoPosX * xSize
+                        , this.paddleTwoPosY * xSize
+                        , this.paddleWidth   * xSize
+                        , this.paddleHeight  * xSize);
+        //ball
+        context.fillStyle = this.ballColor;
+        context.fillRect( this.ballX      * xSize
+                        , this.ballY      * xSize
+                        , this.ballRadius * xSize
+                        , this.ballRadius * xSize);
     }
 }
 
+//Keyboard
+class KeyboardClass {
+    constructor() {	
+      this.item = [];	
+      document.addEventListener("keyup", this.onKeyUp.bind(this));					
+      document.addEventListener("keydown", this.onKeyDown.bind(this));	
+    }
+    onKeyDown(event) {
+      let preventKeys = ['Escape', 'Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '];
+      if (preventKeys.indexOf(event.key) > -1) event.preventDefault();
+      if (this.item.indexOf(event.key) < 0) this.item.push(event.key);	
+    }
+    onKeyUp(event) {
+      let i = this.item.indexOf(event.key);
+      if (i > -1) this.item.splice(i, 1);
+    }
+    getKeys() { 
+      return this.item
+    }
+    click(key) { 
+      let i = this.item.indexOf(key);
+      if (i > -1) this.item.splice(i, 1);
+      return (i > -1);
+    }
+    key(key) { 
+      return (this.item.indexOf(key) > -1);
+    }
+}
+
+
+
+//canvas size & pong reference
 const pong = new PongModel();
-
-//scale
-let xScale = 4;
-let yScale = 3;
-
-//canvas size
 let xSize = 0;
 let ySize = 0;
 
@@ -54,7 +117,7 @@ function    resizeCanvas(xScale, yScale) {
     setCanvas(ySize, xSize); 
 }
 
-//draw pong
+//draw pong test
 function drawPong(xSize) {
     context.fillStyle = "#fff";
     //paddle one
@@ -107,8 +170,6 @@ function drawTest(squares, margin) {
     }
 }
 
-//setCanvas(300, 400); //por defecto 4:3
-
 // loop
 let lastTime = 0; 
 let lastSize = 0; //control scale change 
@@ -122,9 +183,10 @@ function    loop(time)
         fps = 0;
         lastTime = time;
     }
-    resizeCanvas(xScale, yScale);
-    drawTest(14, 5);
-    drawPong(xSize);
+    resizeCanvas(4, 3);
+    //drawTest(14, 5);
+    //drawPong(xSize);
+    pong.draw(xSize, context);
     window.requestAnimationFrame(loop);
 }
 loop();
