@@ -22,6 +22,7 @@ class PongModel {
         this.paddleInitY = (this.fieldHeight / 2) - (this.paddleHeight / 2);
         this.paddleTopLimit = this.fieldMarginY;
         this.paddleBottonLimit = this.fieldHeight - this.fieldMarginY - this.paddleHeight;
+        this.paddleSpeed = scale(this.fieldHeight, 100, 0.5);
         //paddle one
         this.paddleOneInitPosX = this.fieldMarginX;
         this.paddleOnePosX = this.paddleOneInitPosX;
@@ -44,6 +45,50 @@ class PongModel {
         this.scoreTwoPosX = scale(this.fieldWidth, 100, 20);
         this.scorePosY = scale(this.fieldWidth, 100, 10);
         this.scoreColor = "#fff";
+        this.scorePlayerOne = 0;
+        this.scorePlayerTwo = 0;
+        //inputs
+        this.inputPlayerOneUp = 0; 
+        this.inputPlayerOneDown = 0;
+        this.inputPlayerTwoUp = 0;
+        this.inputPlayerTwoDown = 0;
+        //keys
+        this.keyValueOneUp = "w";
+        this.keyValueOneDown = "s";
+        this.keyValueTwoUp = "o";
+        this.keyValueTwoDown = "l";
+        //moves (1 up, 0 stop, -1 down)
+        this.movePaddleOne = 0;
+        this.movePaddleTwo = 0;
+        //players mode (0 = local, 1 = remote, 2 = IA)
+        this.playerOneMode = 0; 
+        this.playerTwoMode = 0;
+    }
+
+    setKeys(k1up, k1down, k2up, k2down) {
+        this.keyValueOneUp = k1up;
+        this.keyValueOneDown = k1down;
+        this.keyValueTwoUp = k2up;
+        this.keyValueTwoDown = k2down;
+    }
+
+    readImputs() {
+        //Player One 
+        if (this.playerOneMode == 0) {
+            this.inputPlayerOneUp = keyControler.key(this.keyValueOneUp);
+            this.inputPlayerOneDown = keyControler.key(this.keyValueOneDown);
+            this.movePaddleOne = this.inputPlayerOneUp - this.inputPlayerOneDown;
+            if (this.playerTwoMode == 1)
+                console.log("send:" + movePaddleOne); //enviar al servidor
+        }
+        //Player Two
+        if (this.playerTwoMode == 0) {
+            this.inputPlayerTwoUp = keyControler.key(this.keyValueTwoUp);
+            this.inputPlayerTwoDown = keyControler.key(this.keyValueTwoDown);
+            this.movePaddleTwo = this.inputPlayerTwoUp - this.inputPlayerTwoDown;
+            if (this.playerOneMode == 1)
+                console.log("send:" + movePaddleTwo);
+        }
     }
 
     draw(xSize, context) {
@@ -78,11 +123,13 @@ class KeyboardClass {
     onKeyDown(event) {
       let preventKeys = ['Escape', 'Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '];
       if (preventKeys.indexOf(event.key) > -1) event.preventDefault();
-      if (this.item.indexOf(event.key) < 0) this.item.push(event.key);	
+      if (this.item.indexOf(event.key) < 0) this.item.push(event.key);
+      pong.readImputs();	
     }
     onKeyUp(event) {
       let i = this.item.indexOf(event.key);
       if (i > -1) this.item.splice(i, 1);
+      pong.readImputs();
     }
     getKeys() { 
       return this.item
@@ -97,10 +144,12 @@ class KeyboardClass {
     }
 }
 
+function test() {console.log("testing")}
 
-
-//canvas size & pong reference
+//pong & controler
 const pong = new PongModel();
+const keyControler = new KeyboardClass(pong);
+//canvas size
 let xSize = 0;
 let ySize = 0;
 
