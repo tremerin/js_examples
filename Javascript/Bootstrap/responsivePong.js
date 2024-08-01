@@ -22,7 +22,7 @@ class PongModel {
         this.paddleInitY = (this.fieldHeight / 2) - (this.paddleHeight / 2);
         this.paddleTopLimit = this.fieldMarginY;
         this.paddleBottonLimit = this.fieldHeight - this.fieldMarginY - this.paddleHeight;
-        this.paddleSpeed = scale(this.fieldHeight, 100, 0.5);
+        this.paddleSpeed = scale(this.fieldHeight, 100, 1);
         //paddle one
         this.paddleOneInitPosX = this.fieldMarginX;
         this.paddleOnePosX = this.paddleOneInitPosX;
@@ -39,6 +39,7 @@ class PongModel {
         this.ballInitY = (this.fieldHeight / 2) - (this.ballRadius / 2);
         this.ballX = this.ballInitX;
         this.ballY = this.ballInitY;
+        this.balldir = 0;
         this.ballColor = "#fff";
         //score
         this.scoreOnePosX = this.fieldWidth - scale(this.fieldWidth, 100, 20);
@@ -89,6 +90,25 @@ class PongModel {
             if (this.playerOneMode == 1)
                 console.log("send:" + movePaddleTwo);
         }
+    }
+
+    moveElements() {
+        if (this.movePaddleOne == 1 && this.paddleOnePosY > this.fieldMarginY) {
+            this.paddleOnePosY -= this.paddleSpeed;
+        }
+        else if (this.movePaddleOne == -1 && (this.paddleOnePosY + this.paddleHeight) < this.fieldHeight - this.fieldMarginY) {
+            this.paddleOnePosY += this.paddleSpeed;
+        }
+        if (this.movePaddleTwo == 1 && this.paddleTwoPosY > this.fieldMarginY) {
+            this.paddleTwoPosY -= this.paddleSpeed;
+        }
+        else if (this.movePaddleTwo == -1 && (this.paddleTwoPosY + this.paddleHeight) < this.fieldHeight - this.fieldMarginY) {
+            this.paddleTwoPosY += this.paddleSpeed;
+        }
+    }
+
+    ballCollision() {
+        
     }
 
     draw(xSize, context) {
@@ -235,6 +255,7 @@ function    loop(time)
     resizeCanvas(4, 3);
     //drawTest(14, 5);
     //drawPong(xSize);
+    pong.moveElements();
     pong.draw(xSize, context);
     window.requestAnimationFrame(loop);
 }
